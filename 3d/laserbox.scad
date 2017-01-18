@@ -8,7 +8,7 @@ $fs = 0.05;
 // 4 = animated multi-laser
 
 demo_type = 4;
-cover_closed = 0;
+cover_closed = 1;
 glass_exists = 0;
 cut_away = 0;
 
@@ -263,8 +263,22 @@ if(!cut_away)
                     // cutout for viewing
                     translate([-0.1,4,4.5])
                         cube([0.7,27.5,28.5]);
+                    if(cover_closed) {
+                        // gesture sensor
+                        translate([-0.1,17,2])
+                            cube([0.7,1.5,1]);
+                    }
                 }
             }
+            // hide the gesture sensor if the cover is open
+            // ideally it would appear both ways but getting it in the right place is hard
+            if(cover_closed) {
+                // gesture sensor glass
+                translate([-0.1,17,2])
+                    color([0,0.1,0.1,0.5])
+                        cube([0.7,1.5,1]);
+            }
+            // cutout for viewing
             if(cover_closed == 0 || glass_exists == 1)
                 translate([-0.1,4,4.5])
                     color([0,1,1,0.2])
