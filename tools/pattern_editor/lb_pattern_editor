@@ -1,0 +1,166 @@
+#!/opt/local/bin/ruby2.0
+
+require 'gosu'
+
+require './pixel.rb' # Pixels represent one laser beam
+require './plane.rb' # Planes are groups of 6x6 laser pixels aiming in the same direction
+require './frame.rb' # Frames contain two planes, one ZY and one XY
+
+class FilenameEntryField < Gosu::TextInput
+  def initialize
+    super
+  end
+end
+
+class LBEditor < Gosu::Window
+  def needs_cursor?
+      true
+  end
+    
+  def initialize
+    super 595, 315
+    self.caption = "LaserBox Pattern Editor"
+    self.update_interval = 25
+    @lit_image = Gosu::Image.new("images/pixel-lit.png")
+    @dim_image = Gosu::Image.new("images/pixel-dim.png")
+    @frames = [Frame.new(@lit_image, @dim_image)]
+    @cur_frame = 0
+    # TODO: configurable filename
+    @filename = "001.PAT"
+    @mouse_down = false
+    @last_toggled_pixel = nil
+    refresh_frame_info
+  end
+
+  def update
+    if(@mouse_down) then
+      # let the user drag over multiple pixels to toggle them
+      toggle_hover_pixel
+    end
+  end
+  
+  def draw
+    if(self.text_input) then
+      # we're in the middle of entering a filename
+      filename_text = Gosu::Image.from_text("Filename: #{self.text_input.text}", 30)
+      filename_text.draw(50, 110, 0)
+      return
+    end
+    @frames[@cur_frame].redraw
+    @frame_info.draw(280, 130, 0)
+    frame_text = Gosu::Image.from_text("Frame", 20)
+    frame_text.draw(272, 110, 0)
+    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame", 16);
+    help_info.draw(4, 290, 0)
+    plane_z_info = Gosu::Image.from_text("← Z+", 15);
+    plane_z_info.draw(240, 269, 0)
+    plane_x_info = Gosu::Image.from_text("X+ →", 15);
+    plane_x_info.draw(329, 269, 0)
+    plane_y_info = Gosu::Image.from_text(" ↑\nY+", 15);
+    plane_y_info.draw(273, 237, 0)
+    plane_y_info.draw(310, 237, 0)
+  end
+  
+  def button_down(button_id)
+    case button_id
+      when Gosu::MsLeft
+        @mouse_down = true
+        @last_toggled_pixel = nil
+    end
+  end
+  
+  def button_up(button_id)
+    # if we're entering a filename, only allow enter or escape keypresses through until done
+    return if self.text_input && button_id != Gosu::KbReturn && button_id != Gosu::KbEscape
+    
+    case button_id
+      when Gosu::MsLeft
+        @mouse_down = false
+        toggle_hover_pixel
+      when Gosu::KbS
+        # S - Save pattern to file, prompt for filename
+        @file_action = :save
+        self.text_input = FilenameEntryField.new
+      when Gosu::KbL
+        # L - Load pattern from file, prompt for filename
+        @file_action = :load
+        self.text_input = FilenameEntryField.new
+      when Gosu::KbC
+        # C - Clear frame
+        @frames[@cur_frame].clear!
+      when Gosu::KbLeft
+        # Left Arrow - Go to previous frame
+        @cur_frame -= 1 if @cur_frame > 0
+        refresh_frame_info
+      when Gosu::KbRight
+        # Right Arrow - Go to next frams
+        @cur_frame += 1 if @cur_frame < @frames.size - 1
+        refresh_frame_info
+      when Gosu::KbEqual
+        # Plus - Add frame
+        @frames << Frame.new(@lit_image, @dim_image)
+        @cur_frame = @frames.size - 1
+        refresh_frame_info
+      when Gosu::KbMinus
+        # Minus - Delete frame
+        @frames.delete_at @cur_frame if @frames.size > 1
+        @cur_frame = @frames.size - 1
+        refresh_frame_info
+      when Gosu::KbReturn
+        # Enter - Complete entry of filename and execute save/load action
+        return if !self.text_input
+        @filename = self.text_input.text
+        self.text_input = nil
+        save if @file_action == :save
+        load if @file_action == :load
+      when Gosu::KbEscape
+        # Escape - Abort entry of filename and associated save/load
+        self.text_input = nil
+    end
+  end
+  
+  def refresh_frame_info
+    # update the text image that shows which frame we're on and the total number
+    @frame_info = Gosu::Image.from_text("#{@cur_frame+1}/#{@frames.size}", 25)        
+  end
+  
+  def toggle_hover_pixel
+    # toggle whichever pixel the mouse is currently over, if it's not the most recent one we already toggled
+    over_pixel = @frames[@cur_frame].find_pixel_by_coords(self.mouse_x, self.mouse_y)
+    if(over_pixel and over_pixel != @last_toggled_pixel) then
+      @last_toggled_pixel = over_pixel
+      over_pixel.toggle!
+    end
+  end
+  
+  def save
+    print "Saving as #{@filename}..."
+    File.open(@filename, 'w') do |file|
+      # file starts with the number of frames
+      file.write([@frames.size].pack('C'))
+      # now write each frame
+      @frames.each do |frame|
+        file.write(frame.to_binary.pack('C*'))
+      end
+    end
+    puts "done."
+  end
+  
+  def load
+    puts "Loading patterm from #{@filename}..."
+    File.open(@filename, 'r') do |file|
+      nbr_frames = file.read(1).unpack('C')[0]
+      puts " Found #{nbr_frames} frames."
+      @frames = Array.new(nbr_frames) { Frame.new(@lit_image, @dim_image) }
+      (0..nbr_frames-1).each do |frame_nbr|
+        puts " Loading data for frame #{frame_nbr}"
+        @frames[frame_nbr].load_from_binary file.read(12).unpack('C*')
+      end
+      @cur_frame = 0
+      refresh_frame_info
+      puts "Done loading."
+    end
+  end
+end
+
+LBEditor.new.show
