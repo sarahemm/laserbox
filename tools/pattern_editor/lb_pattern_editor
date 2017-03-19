@@ -25,8 +25,7 @@ class LBEditor < Gosu::Window
     @dim_image = Gosu::Image.new("images/pixel-dim.png")
     @frames = [Frame.new(@lit_image, @dim_image)]
     @cur_frame = 0
-    # TODO: configurable filename
-    @filename = "001.PAT"
+    @filename = ""
     @mouse_down = false
     @last_toggled_pixel = nil
     refresh_frame_info
