@@ -149,7 +149,9 @@ class LBEditor < Gosu::Window
       over_pixel.toggle!
       # if we're attached to a live LaserBox, update the pixel there too
       if(@live_box) then
-        @live_box.set_pixel(0, over_pixel.x, 5-over_pixel.y, over_pixel.lit? ? 1 : 0)
+        plane = 0
+        plane = 1 if over_pixel.plane == @frames[@cur_frame].xy_plane
+        @live_box.set_pixel(plane, over_pixel.x, 5-over_pixel.y, over_pixel.lit? ? 1 : 0)
         @live_box.refresh
       end
     end
@@ -193,7 +195,8 @@ class LBEditor < Gosu::Window
   
   def refresh_live_box
     return if !@live_box
-    @live_box.set_plane_from_plane 0, @frames[@cur_frame].xy_plane
+    @live_box.set_plane_from_plane 0, @frames[@cur_frame].zy_plane
+    @live_box.set_plane_from_plane 1, @frames[@cur_frame].xy_plane
     @live_box.refresh
   end
 end
