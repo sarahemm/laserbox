@@ -1,5 +1,7 @@
 # Pixels represent one laser beam
 class Pixel
+  attr_reader :x, :y
+
   def initialize(plane, x, y)
     @plane = plane
     @x = x

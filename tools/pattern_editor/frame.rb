@@ -1,5 +1,7 @@
 # Frames contain two planes, one ZY and one XY
 class Frame
+  attr_reader :zy_plane, :xy_plane
+
   def initialize(lit_image, dim_image)
     @zy_plane = Plane.new(10,  10, lit_image, dim_image)
     @xy_plane = Plane.new(325, 10, lit_image, dim_image)

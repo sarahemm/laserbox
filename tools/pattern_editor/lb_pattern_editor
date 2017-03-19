@@ -2,9 +2,10 @@
 
 require 'gosu'
 
-require './pixel.rb' # Pixels represent one laser beam
-require './plane.rb' # Planes are groups of 6x6 laser pixels aiming in the same direction
-require './frame.rb' # Frames contain two planes, one ZY and one XY
+require './pixel.rb'  # Pixels represent one laser beam
+require './plane.rb'  # Planes are groups of 6x6 laser pixels aiming in the same direction
+require './frame.rb'  # Frames contain two planes, one ZY and one XY
+require './lblive.rb' # LaserBoxLive lets us attach to a connected LaserBox and display changes live
 
 class FilenameEntryField < Gosu::TextInput
   def initialize
@@ -18,7 +19,7 @@ class LBEditor < Gosu::Window
   end
     
   def initialize
-    super 595, 315
+    super 595, 325
     self.caption = "LaserBox Pattern Editor"
     self.update_interval = 25
     @lit_image = Gosu::Image.new("images/pixel-lit.png")
@@ -49,7 +50,7 @@ class LBEditor < Gosu::Window
     @frame_info.draw(280, 130, 0)
     frame_text = Gosu::Image.from_text("Frame", 20)
     frame_text.draw(272, 110, 0)
-    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame", 16);
+    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [Q]uit", 16);
     help_info.draw(4, 290, 0)
     plane_z_info = Gosu::Image.from_text("← Z+", 15);
     plane_z_info.draw(240, 269, 0)
@@ -76,6 +77,14 @@ class LBEditor < Gosu::Window
       when Gosu::MsLeft
         @mouse_down = false
         toggle_hover_pixel
+      when Gosu::KbA
+        # A - Attach to live LaserBox
+        @file_action = :live
+        self.text_input = FilenameEntryField.new
+      when Gosu::KbD
+        # D - Detach from live LaserBox
+        puts "Detaching from live LaserBox."
+        @live_box = nil
       when Gosu::KbS
         # S - Save pattern to file, prompt for filename
         @file_action = :save
@@ -87,24 +96,32 @@ class LBEditor < Gosu::Window
       when Gosu::KbC
         # C - Clear frame
         @frames[@cur_frame].clear!
+        refresh_live_box
+      when Gosu::KbQ
+        # Q - Quit app
+        Kernel.exit
       when Gosu::KbLeft
         # Left Arrow - Go to previous frame
         @cur_frame -= 1 if @cur_frame > 0
         refresh_frame_info
+        refresh_live_box
       when Gosu::KbRight
         # Right Arrow - Go to next frams
         @cur_frame += 1 if @cur_frame < @frames.size - 1
         refresh_frame_info
+        refresh_live_box
       when Gosu::KbEqual
         # Plus - Add frame
         @frames << Frame.new(@lit_image, @dim_image)
         @cur_frame = @frames.size - 1
         refresh_frame_info
+        refresh_live_box
       when Gosu::KbMinus
         # Minus - Delete frame
         @frames.delete_at @cur_frame if @frames.size > 1
         @cur_frame = @frames.size - 1
         refresh_frame_info
+        refresh_live_box
       when Gosu::KbReturn
         # Enter - Complete entry of filename and execute save/load action
         return if !self.text_input
@@ -112,6 +129,7 @@ class LBEditor < Gosu::Window
         self.text_input = nil
         save if @file_action == :save
         load if @file_action == :load
+        live_attach if @file_action == :live
       when Gosu::KbEscape
         # Escape - Abort entry of filename and associated save/load
         self.text_input = nil
@@ -129,6 +147,11 @@ class LBEditor < Gosu::Window
     if(over_pixel and over_pixel != @last_toggled_pixel) then
       @last_toggled_pixel = over_pixel
       over_pixel.toggle!
+      # if we're attached to a live LaserBox, update the pixel there too
+      if(@live_box) then
+        @live_box.set_pixel(0, over_pixel.x, 5-over_pixel.y, over_pixel.lit? ? 1 : 0)
+        @live_box.refresh
+      end
     end
   end
   
@@ -159,6 +182,19 @@ class LBEditor < Gosu::Window
       refresh_frame_info
       puts "Done loading."
     end
+  end
+  
+  def live_attach
+    # attach to a live connected LaserBox
+    puts "Attaching to live LaserBox attached to #{@filename}."
+    @live_box = LaserBoxLive.new(@filename)
+    refresh_live_box
+  end
+  
+  def refresh_live_box
+    return if !@live_box
+    @live_box.set_plane_from_plane 0, @frames[@cur_frame].xy_plane
+    @live_box.refresh
   end
 end
 

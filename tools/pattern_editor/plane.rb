@@ -1,6 +1,6 @@
 # Planes are groups of 6x6 laser pixels aiming in the same direction
 class Plane
-  attr_reader :lit_image, :dim_image, :base_x, :base_y
+  attr_reader :lit_image, :dim_image, :base_x, :base_y, :pixels
   
   def initialize(base_x, base_y, lit_image, dim_image)
     @lit_image = lit_image
