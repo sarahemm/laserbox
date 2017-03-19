@@ -8,10 +8,10 @@ class Plane
     @base_x = base_x
     @base_y = base_y
     @pixels = Array.new
-    (0..5).each do |y|
-      (0..5).each do |x|
-        @pixels[y] = Array.new if !@pixels[y]
-        @pixels[y][x] = Pixel.new(self, x, y)
+    (0..5).each do |x|
+      (0..5).each do |y|
+        @pixels[x] = Array.new if !@pixels[x]
+        @pixels[x][y] = Pixel.new(self, x, y)
       end
     end
   end
@@ -38,11 +38,11 @@ class Plane
     # output the data from this plane as one byte per row, the format LaserBox wants
     # (there are two 'junk'/status bits per row because it makes the hardware easier)
     bits = Array.new
-    (0..5).each do |y|
+    (0..5).each do |x|
       row_byte = 0
-      (0..5).each do |x|
+      (0..5).each do |y|
         row_byte = row_byte << 1
-        row_byte |= 0x01 if @pixels[y][x].lit?
+        row_byte |= 0x01 if @pixels[x][y].lit?
       end
       bits << row_byte
     end
@@ -52,10 +52,10 @@ class Plane
   
   def load_from_binary(binary_data)
     # load the plane information from binary data provided
-    binary_data.each_index do |y_idx|
-      5.downto(0).each do |x_idx|
-        @pixels[y_idx][x_idx].lit = (binary_data[y_idx] & 0x01 != 0x00 ? true : false)
-        binary_data[y_idx] = binary_data[y_idx] >> 1
+    binary_data.each_index do |x_idx|
+      5.downto(0).each do |y_idx|
+        @pixels[x_idx][y_idx].lit = (binary_data[x_idx] & 0x01 != 0x00 ? true : false)
+        binary_data[x_idx] = binary_data[x_idx] >> 1
       end
     end
   end

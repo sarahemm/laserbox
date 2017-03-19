@@ -26,14 +26,6 @@ class LaserBoxLive
   end
   
   def set_plane_from_plane(plane_nbr, plane)
-    pixel_bytes = []
-    (0..5).each do |x|
-      pixel_bytes[x] = 0
-      (0..5).each do |y|
-        pixel_bytes[x] |= (plane.pixels[y][x].lit? ? 1 : 0) << 5-y
-      end
-    end
-    
-    send_cmd [0x02, plane_nbr] + pixel_bytes
+    send_cmd [0x02, plane_nbr] + plane.to_binary
   end
 end
