@@ -179,6 +179,7 @@ class LBEditor < Gosu::Window
   def export
     print "Exporting v2 pattern file as #{@filename}..."
     pat = Pattern.new_from_frames(@frames).save(@filename)
+    puts "done."
   end
   
   def load
