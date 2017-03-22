@@ -16,6 +16,15 @@ class Plane
     end
   end
   
+  def ==(other_plane)
+    (0..5).each do |x|
+      (0..5).each do |y|
+        return false if @pixels[x][y].lit? != other_plane.pixels[x][y].lit?
+      end
+    end
+    return true
+  end
+  
   def redraw
     @pixels.each do |row|
       row.each do |pixel|

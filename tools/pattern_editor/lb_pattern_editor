@@ -2,10 +2,11 @@
 
 require 'gosu'
 
-require './pixel.rb'  # Pixels represent one laser beam
-require './plane.rb'  # Planes are groups of 6x6 laser pixels aiming in the same direction
-require './frame.rb'  # Frames contain two planes, one ZY and one XY
-require './lblive.rb' # LaserBoxLive lets us attach to a connected LaserBox and display changes live
+require './pixel.rb'   # Pixels represent one laser beam
+require './plane.rb'   # Planes are groups of 6x6 laser pixels aiming in the same direction
+require './frame.rb'   # Frames contain two planes, one ZY and one XY
+require './pattern.rb' # Patterns store multiple frames and related commands on disk
+require './lblive.rb'  # LaserBoxLive lets us attach to a connected LaserBox and display changes live
 
 class FilenameEntryField < Gosu::TextInput
   def initialize
@@ -50,7 +51,7 @@ class LBEditor < Gosu::Window
     @frame_info.draw(280, 130, 0)
     frame_text = Gosu::Image.from_text("Frame", 20)
     frame_text.draw(272, 110, 0)
-    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [Q]uit", 16);
+    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [E]xport  [Q]uit", 16);
     help_info.draw(4, 290, 0)
     plane_z_info = Gosu::Image.from_text("← Z+", 15);
     plane_z_info.draw(240, 269, 0)
@@ -88,6 +89,10 @@ class LBEditor < Gosu::Window
       when Gosu::KbS
         # S - Save pattern to file, prompt for filename
         @file_action = :save
+        self.text_input = FilenameEntryField.new
+      when Gosu::KbE
+        # E - Export pattern to Pattern v2 file format
+        @file_action = :export
         self.text_input = FilenameEntryField.new
       when Gosu::KbL
         # L - Load pattern from file, prompt for filename
@@ -129,6 +134,7 @@ class LBEditor < Gosu::Window
         self.text_input = nil
         save if @file_action == :save
         load if @file_action == :load
+        export if @file_action == :export
         live_attach if @file_action == :live
       when Gosu::KbEscape
         # Escape - Abort entry of filename and associated save/load
@@ -150,7 +156,7 @@ class LBEditor < Gosu::Window
       # if we're attached to a live LaserBox, update the pixel there too
       if(@live_box) then
         plane = 0
-        plane = 1 if over_pixel.plane == @frames[@cur_frame].xy_plane
+        plane = 1 if over_pixel.plane.equal?(@frames[@cur_frame].xy_plane)
         @live_box.set_pixel(plane, over_pixel.x, 5-over_pixel.y, over_pixel.lit? ? 1 : 0)
         @live_box.refresh
       end
@@ -168,6 +174,11 @@ class LBEditor < Gosu::Window
       end
     end
     puts "done."
+  end
+  
+  def export
+    print "Exporting v2 pattern file as #{@filename}..."
+    pat = Pattern.new_from_frames(@frames).save(@filename)
   end
   
   def load
