@@ -51,7 +51,7 @@ class LBEditor < Gosu::Window
     @frame_info.draw(280, 130, 0)
     frame_text = Gosu::Image.from_text("Frame", 20)
     frame_text.draw(272, 110, 0)
-    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [E]xport  [Q]uit", 16);
+    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [E]xport  [R]everse  [Q]uit", 16);
     help_info.draw(4, 290, 0)
     plane_z_info = Gosu::Image.from_text("← Z+", 15);
     plane_z_info.draw(240, 269, 0)
@@ -105,6 +105,11 @@ class LBEditor < Gosu::Window
       when Gosu::KbQ
         # Q - Quit app
         Kernel.exit
+      when Gosu::KbR
+        # R - Reverse animation sequence
+        @frames.reverse!
+        refresh_frame_info
+        refresh_live_box
       when Gosu::KbLeft
         # Left Arrow - Go to previous frame
         @cur_frame -= 1 if @cur_frame > 0
