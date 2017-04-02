@@ -51,7 +51,7 @@ class LBEditor < Gosu::Window
     @frame_info.draw(280, 130, 0)
     frame_text = Gosu::Image.from_text("Frame", 20)
     frame_text.draw(272, 110, 0)
-    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [E]xport  [R]everse  [Q]uit", 16);
+    help_info = Gosu::Image.from_text("[L]oad  [S]ave  [C]lear Frame  [+] Add Frame  [-] Del Frame  [←] Prev Frame  [→] Next Frame\n[A]ttach  [D]etach  [I]mport  [E]xport  [R]everse  [Q]uit", 16);
     help_info.draw(4, 290, 0)
     plane_z_info = Gosu::Image.from_text("← Z+", 15);
     plane_z_info.draw(240, 269, 0)
@@ -93,6 +93,10 @@ class LBEditor < Gosu::Window
       when Gosu::KbE
         # E - Export pattern to Pattern v2 file format
         @file_action = :export
+        self.text_input = FilenameEntryField.new
+      when Gosu::KbI
+        # I - Import pattern from Pattern v2 file format
+        @file_action = :import
         self.text_input = FilenameEntryField.new
       when Gosu::KbL
         # L - Load pattern from file, prompt for filename
@@ -142,6 +146,7 @@ class LBEditor < Gosu::Window
         save if @file_action == :save
         load if @file_action == :load
         export if @file_action == :export
+        import if @file_action == :import
         live_attach if @file_action == :live
       when Gosu::KbEscape
         # Escape - Abort entry of filename and associated save/load
@@ -186,6 +191,18 @@ class LBEditor < Gosu::Window
   def export
     print "Exporting v2 pattern file as #{@filename}..."
     pat = Pattern.new_from_frames(@frames).save(@filename)
+    puts "done."
+  end
+  
+  def import
+    # import a v2 pattern file into the editor
+    puts "Importing v2 pattern from #{@filename}..."
+    # turn the file into a Pattern
+    pat = Pattern.new_from_file(@filename, @frames[0])
+    # turn the Pattern into a series of frames we can use
+    @cur_frame = 0
+    @frames = pat.to_frames
+    refresh_frame_info
     puts "done."
   end
   

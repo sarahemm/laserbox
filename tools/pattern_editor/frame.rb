@@ -2,9 +2,9 @@
 class Frame
   attr_reader :zy_plane, :xy_plane
 
-  def initialize(lit_image, dim_image)
-    @zy_plane = Plane.new(10,  10, lit_image, dim_image)
-    @xy_plane = Plane.new(325, 10, lit_image, dim_image)
+  def initialize(lit_image, dim_image, zy_plane = nil, xy_plane = nil)
+    @zy_plane = zy_plane || Plane.new(10,  10, lit_image, dim_image)
+    @xy_plane = xy_plane || Plane.new(325, 10, lit_image, dim_image)
   end
   
   def redraw
