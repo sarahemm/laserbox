@@ -27,6 +27,10 @@ class Frame
     @xy_plane.load_from_binary(binary_data[6..11])
   end
   
+  def copy_from(other_frame)
+    load_from_binary other_frame.to_binary
+  end
+  
   def clear!
     @xy_plane.clear!
     @zy_plane.clear!

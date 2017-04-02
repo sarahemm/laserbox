@@ -118,6 +118,8 @@ class LBEditor < Gosu::Window
       when Gosu::KbEqual
         # Plus - Add frame
         @frames << Frame.new(@lit_image, @dim_image)
+        # new frame starts with image data from whichever frame was previously selected
+        @frames[@frames.size - 1].copy_from @frames[@cur_frame]
         @cur_frame = @frames.size - 1
         refresh_frame_info
         refresh_live_box
