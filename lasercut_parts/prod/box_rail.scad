@@ -1,6 +1,9 @@
 // box rail - these screw into the main box and provide slots for the vertical plates to go into
 // makes 8, the total number required
 
+// MATERIAL:
+// 1.51 square feet
+
 include <common.scad>
 
 rail_width = inch_to_mm(1);

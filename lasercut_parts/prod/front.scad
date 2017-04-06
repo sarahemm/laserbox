@@ -6,6 +6,9 @@
 // TODO: figure out how this will attach, ideally hinges of some kind
 // TODO: add windows for various sensors and resource collection
 
+// MATERIAL:
+// 9 square feet
+
 include <common.scad>
 
 difference() {

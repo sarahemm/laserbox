@@ -7,6 +7,9 @@
 // one set of rails goes material_thickness under the bottom plate rail to hold the bottom laser plate
 // the L-rails hold the left laser plate in the centre
 
+// MATERIAL:
+// 8.2 square feet - 0.8 square feet corner scrap
+
 include <common.scad>
 
 rail_width = inch_to_mm(0.5);

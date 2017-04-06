@@ -4,6 +4,9 @@
 // ASSEMBLY:
 // slides into top rails provided by left and right plates, smallest holes on the right near the fog output
 
+// MATERIAL:
+// 4 square feet
+
 include <common.scad>
 
 hole_dia_max = 10;

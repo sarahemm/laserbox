@@ -5,6 +5,9 @@
 // one set of rails goes plate_height from the top to hold the top plate
 // one set of rails goes plate_height from the bottom to hold the bottom plate
 
+// MATERIAL:
+// 6.78 square feet
+
 include <common.scad>
 
 rail_width = inch_to_mm(0.5);

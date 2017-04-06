@@ -5,6 +5,9 @@
 // left laser plate slides into the sets of L-rails provided to hold it
 // bottom laser plate slides into the rails on the left/right vertical plates, under the bottom plate
 
+// MATERIAL:
+// 4 square feet each * 2
+
 include <common.scad>
 
 laser_dia = 4;
