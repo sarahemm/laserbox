@@ -4,6 +4,7 @@
 // ASSEMBLY:
 // one set of rails goes plate_height from the top to hold the top plate
 // one set of rails goes plate_height from the bottom to hold the bottom plate
+// one set of rails goes material_thickness under the bottom plate rail to hold the bottom laser plate
 // the L-rails hold the left laser plate in the centre
 
 include <common.scad>
@@ -25,14 +26,14 @@ difference() {
 
 // rails to hold bottom and top plates
 translate([0, box_depth + rail_spacing*2, 0]) {
-    for(rail_nbr = [0 : 3]) {
+    for(rail_nbr = [0 : 4]) {
         translate([0, rail_nbr * (rail_width+rail_spacing), 0])
             square([box_depth, rail_width]);
     }
 }
 
 // L-rails to hold slide-in left laser plate
-translate([0, box_depth + rail_spacing*4 + 4*(rail_width + rail_spacing), 0]) {
+translate([0, box_depth + rail_spacing*4 + 5*(rail_width + rail_spacing), 0]) {
     l_rails(box_depth, rail_width*2, rail_spacing, 2);
 }
 
