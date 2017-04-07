@@ -20,6 +20,9 @@ void setup() {
   // initialize the laser subsystem so we can make blinkyness
   laserInit();
 
+  // initialize the fog subsystem so we can make and blow fog
+  fogInit();
+  
   // initialize the sensor subsystem so we can receive control info
   sensorInit();
 }

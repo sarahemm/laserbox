@@ -46,8 +46,15 @@ void debugHandleEvents(void) {
         while(!Serial.available()) { }
         test = Serial.read();
         switch(test) {
+          case 'F':
+          case 'f':
+            debugResponse("FOG TEST");
+            fogTest();
+            debugResponse("FOG OK");
+            break;
           case 'L':
           case 'l':
+            debugResponse("LASER TEST");
             laserTest();
             debugResponse("LASER OK");
             break;
