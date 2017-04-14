@@ -49,8 +49,10 @@ void debugHandleEvents(void) {
           case 'F':
           case 'f':
             debugResponse("FOG TEST");
-            fogTest();
-            debugResponse("FOG OK");
+            if(fogTest())
+              debugResponse("FOG OK");
+            else
+              debugResponse("FOG FAIL");
             break;
           case 'L':
           case 'l':
