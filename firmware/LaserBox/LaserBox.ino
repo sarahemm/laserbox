@@ -8,12 +8,15 @@
 void setup() {
   // initialize the debugging subsystem so we can interact early if needed
   debugInit();
-  
+
   // initialize the logging subsystem so we can record/report any errors
   logInit();
 
   // initialize the storage subsystem so we can read patterns and write logs
   storageInit();
+
+  // initialize the config subsystem so we can load/save configuration data
+  configInit();
   
   // initialize the telemetry subsystem so we can communicate with the outside world
   telemetryInit();
