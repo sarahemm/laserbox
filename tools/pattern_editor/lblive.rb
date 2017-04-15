@@ -4,8 +4,8 @@ class LaserBoxLive
   def initialize(port)
     @port = Serial.new(port, 115200)
     throw "failed to initialize serial port" if @port.nil?
-    sleep 1
-    @port.write 'L'
+    sleep 3
+    @port.write "live\n"
   end
   
   def send_cmd(cmd_bytes)
