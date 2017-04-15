@@ -3,6 +3,7 @@
 
 #include <SPI.h>
 #include <SD.h>
+#include <SerialUI.h>
 
 void setup() {
   // initialize the debugging subsystem so we can interact early if needed
