@@ -36,7 +36,11 @@ void debugInitMenu(void) {
   // test menu
   SUI::Menu *testMenu = mainMenu->subMenu(main_test_cmd, main_test_help);
   testMenu->setName(test_title);
+
   fogInitTestMenu(testMenu);
+  laserInitTestMenu(testMenu);
+
+  logInitMainMenu(mainMenu);
 }
 
 void debugEnterLiveMode(void) {

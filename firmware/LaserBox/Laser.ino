@@ -7,6 +7,13 @@
 #define LASER_PLANE_YZ 0
 #define LASER_PLANE_XY 1
 
+SUI_DeclareString(test_laser_cmd,       "laser");
+SUI_DeclareString(test_laser_help,      "Laser subsystem tests");
+
+SUI_DeclareString(test_laser_title,     "Laser Test Menu");
+SUI_DeclareString(test_laser_seq_cmd,   "sequence");
+SUI_DeclareString(test_laser_seq_help,  "Laser sequence test");
+
 // XY Plane - Lasers firing from bottom up
 //            X is left/right when looking down at the plate from the front
 //            Y is forward/back
@@ -61,6 +68,13 @@ void laserInit(void) {
   laserRefresh();
 }
 
+void laserInitTestMenu(SUI::Menu *testMenu) {
+  // test laser menu
+  SUI::Menu *testLaserMenu = testMenu->subMenu(test_laser_cmd, test_laser_help);
+  testLaserMenu->setName(test_laser_help);
+  testLaserMenu->addCommand(test_laser_seq_cmd, laserTestSequence, test_laser_seq_help);
+}
+
 void laserClear(void) {
   memset(&laserFramebuffer, 0, 12);
 }
@@ -98,7 +112,7 @@ void laserRefresh(void) {
 }
 
 // Run the laser self-test routine, light each laser in sequence
-byte laserTest(void) {
+byte laserTestSequence(void) {
   byte plane, x, y, chan, led;
 
   // test the status LEDs

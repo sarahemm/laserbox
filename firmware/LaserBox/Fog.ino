@@ -130,13 +130,15 @@ bool fogTestManualFanC(void) {
 
 void fogPulse(byte fan, byte nbrPulses, int onTime, int offTime) {
   byte i;
-  
+
+  digitalWrite(FOG, HIGH);
   for(i=0; i<nbrPulses; i++) {
     digitalWrite(fan, HIGH);
     delay(onTime);
     digitalWrite(fan, LOW);
     delay(offTime);
   }
+  digitalWrite(FOG, LOW);
 }
 
 // returns how many milliamps the fogger is currently drawing

@@ -42,7 +42,7 @@ void loop() {
   */
   // handle any debug events pending
   debugHandleEvents();
-
+/*
   char gestureType[6];  // fits RIGHT<null>, the longest string that can be returned
   byte *patternData;
   byte patternLength;
@@ -55,6 +55,12 @@ void loop() {
     //patternLength = storageGetPattern("ATTRACT/INOUT.LBP", &patternData);
     patternRun(patternData, patternLength);
     free(patternData);
+  }
+  */
+  if(digitalRead(50)) {
+    // motion!
+    
+    fogPulse(8, 1, 500, 500);
   }
   delay(250);
 }
