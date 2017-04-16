@@ -9,25 +9,25 @@ void storageInit(void) {
   }
 }
 
-// read all pattern data from a specific pattern file, return the length of it
+// read all data from a specific file, return the length of it
 // returns a pointer which must be freed when done with it!
-// TODO: DRY this with storageGetRandomPattern
-int *storageGetPattern(char *patternFilename, byte **patternData) {
-  File patternFile;
-  byte patternLength;
+// TODO: DRY this with storageGetRandomPattern?
+int *storageGetFileContents(char *fileName, byte **fileData) {
+  File theFile;
+  byte fileLength;
   
-  patternFile = SD.open(patternFilename);
-  patternLength = patternFile.available();
-  *patternData = malloc(patternLength); // TODO: should read from the file bit by bit as we parse, ideally
-  if(patternData == NULL) {
-    debugMessage("Failed to allocate memory for pattern.");
-    patternFile.close();
+  theFile = SD.open(fileName);
+  fileLength = theFile.available();
+  *fileData = malloc(fileLength); // TODO: should read from the file bit by bit as we parse, ideally
+  if(fileData == NULL) {
+    debugMessage("Failed to allocate memory for file.");
+    theFile.close();
     return 0;
   }
-  patternFile.read(*patternData, patternLength);
-  patternFile.close();
+  theFile.read(*fileData, fileLength);
+  theFile.close();
 
-  return patternLength;
+  return fileLength;
 }
 
 // read all pattern data from a random file of a provided type, return the length of it
