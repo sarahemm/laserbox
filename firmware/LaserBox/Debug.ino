@@ -40,6 +40,7 @@ void debugInitMenu(void) {
   fogInitTestMenu(testMenu);
   laserInitTestMenu(testMenu);
 
+  configInitMainMenu(mainMenu);
   logInitMainMenu(mainMenu);
 }
 

@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialUI.h>
+#include <EEPROM.h>
 
 void setup() {
   // initialize the debugging subsystem so we can interact early if needed
