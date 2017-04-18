@@ -1,17 +1,10 @@
 // right vertical plate - slots into the right box rails and holds the fans, top plate, and bottom plate
-// makes 1 plate (the total number required) and all required rails
-
-// ASSEMBLY:
-// one set of rails goes plate_height from the top to hold the top plate
-// one set of rails goes plate_height from the bottom to hold the bottom plate
+// makes 1 plate (the total number required)
 
 // MATERIAL:
-// 6.78 square feet
+// 6 square feet (24in x 36in)
 
 include <common.scad>
-
-rail_width = inch_to_mm(0.5);
-rail_spacing = 3;
 
 wiring_hole_width = inch_to_mm(5);
 wiring_hole_height = inch_to_mm(3);
@@ -31,14 +24,6 @@ difference() {
     // wiring pass-through
     translate([plate_height/2, box_depth/2 - wiring_hole_width/2, 0])
         square([wiring_hole_height, wiring_hole_width]);
-}
-
-// rails to hold bottom and top plates
-translate([0, box_depth + rail_spacing*2, 0]) {
-    for(rail_nbr = [0 : 3]) {
-        translate([0, rail_nbr * (rail_width+rail_spacing)])
-            square([box_depth, rail_width]);
-    }
 }
 
 // holes for a Mechatronics G4020 fan
